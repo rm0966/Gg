@@ -1,0 +1,173 @@
+Build a Complete AI Self-Discovery Platform
+
+Create a complete, functional Arabic-first website that helps people discover their personality, passions, talents, abilities, and suitable professions.
+
+1. Website Design
+
+* Modern, elegant, professional design.
+* Arabic language by default with full RTL support.
+* Add an English language option.
+* Responsive on phones, tablets, and computers.
+* Dark theme with a clean and comfortable interface.
+* Smooth animations and simple navigation.
+* Use a temporary project name that can be changed later.
+
+2. Homepage
+
+Create a welcoming homepage with a short introduction and three main sections:
+
+Discover Yourself
+
+* Personality analysis.
+* Discover your passion.
+* Discover your talents.
+* Discover your thinking style.
+* Discover your motivations and values.
+
+Discover Your Future
+
+* Discover your suitable profession.
+* Discover your academic interests.
+* Discover suitable business ideas.
+* Discover your future career direction.
+
+Discover Your Abilities
+
+* Leadership skills.
+* Social skills.
+* Problem-solving.
+* Creativity.
+* Practical and technical abilities.
+* Learning style.
+* Suitable work environment.
+
+Each section must have its own test page.
+
+3. Tests and Questions
+
+* Create a separate test for every category.
+* Each test should contain 15–20 carefully written questions.
+* Use multiple-choice questions and rating scales.
+* Include a progress bar.
+* Allow users to move between questions.
+* Allow users to review and change answers.
+* Make the questions clear and easy to understand.
+* Avoid repetitive questions.
+* Do not generate random questions without purpose.
+
+4. Profession Discovery
+
+Focus on real-world practical professions and crafts, not only office jobs.
+
+Include interests such as:
+
+* Car mechanics.
+* Electrical work.
+* Carpentry.
+* Blacksmithing.
+* Agriculture.
+* Cooking.
+* Trading and sales.
+* Sewing and tailoring.
+* Construction.
+* Technology and computer repair.
+* Other practical crafts.
+
+The system should identify suitable professions based on the user’s interests, preferences, and answers.
+
+5. AI Analysis Using Grok
+
+Use the xAI Grok API to analyze completed tests.
+
+Requirements:
+
+* Use XAI_API_KEY as a server-side environment secret.
+* Never expose API keys in frontend code.
+* Send the test questions and answers to the AI.
+* Analyze interests, strengths, motivations, and preferences.
+* Identify patterns and possible contradictions in answers.
+* Generate a detailed personalized report.
+* Explain why each recommendation was made.
+* Provide several suitable recommendations, not just one.
+* Include practical suggestions for developing skills.
+* Clearly distinguish user answers from AI interpretations.
+* Never present personality results as medical or psychological diagnoses.
+* Do not invent scientific scores or claim guaranteed career success.
+* Explain uncertainty when the available answers are insufficient.
+
+6. Results Page
+
+After completing a test:
+
+* Display the complete AI report inside the website.
+* Use clear headings and organized sections.
+* Show the main findings.
+* Show suitable interests, talents, and professions.
+* Explain the reasons behind recommendations.
+* Provide suggestions for next steps.
+* Allow the user to return to the homepage.
+* Allow the user to download the report as a PDF.
+
+Reading the complete report must always be free.
+
+7. Data Storage Inside the Project
+
+Use local JSON files instead of Supabase or Firebase.
+
+Requirements:
+
+* Automatically create a data folder if it does not exist.
+* Save test results in JSON files.
+* Give every result a unique ID.
+* Store the test category, answers, AI report, and creation date.
+* Build a simple backend storage module.
+* Allow saved results to be viewed and deleted.
+* Handle missing files and corrupted JSON safely.
+* Never allow users to access other users’ private results.
+* Do not store unnecessary personal information.
+* Do not require an account or phone number for the first version.
+
+Important: Explain that local file storage may not survive redeployment or restarts on some hosting providers.
+
+8. User Experience
+
+* Keep the interface simple and easy to use.
+* Add loading indicators while AI is analyzing answers.
+* Display friendly error messages.
+* Prevent accidental loss of answers.
+* Make all buttons functional.
+* Add empty states when no results are saved.
+
+9. Monetization
+
+* Keep tests free.
+* Keep results and complete reports free to read.
+* Do not force users to watch advertisements.
+* Make PDF downloading free in the first version.
+* Structure the project so optional advertising can be added later.
+
+10. Technical Requirements
+
+* Use the framework already supported by the Replit project.
+* Keep the architecture simple.
+* Separate frontend, backend, AI integration, and data storage.
+* Use environment variables for secrets.
+* Avoid unnecessary libraries.
+* Ensure all features work, not just visual mockups.
+* Make the project easy to export to GitHub and deploy elsewhere.
+
+11. Final Testing
+
+Before finishing:
+
+* Test every category.
+* Test the question navigation.
+* Test Grok API integration.
+* Test report generation.
+* Test PDF downloading.
+* Test saving, viewing, and deleting results.
+* Check mobile responsiveness.
+* Fix errors before declaring the project complete.
+
+IMPORTANT:
+Build the actual working website, not just a design or prototype. Preserve existing project files when possible, and do not rebuild working features unnecessarily.
