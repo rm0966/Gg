@@ -3,13 +3,17 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: API for Masari self-discovery assessments and private reports
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: assessments
+    description: Bilingual self-discovery assessments
+  - name: discoveries
+    description: Anonymous, owner-scoped assessment results
 paths:
   /healthz:
     get:
@@ -24,7 +28,151 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /assessments:
+    get:
+      operationId: listAssessments
+      tags: [assessments]
+      summary: List all assessment categories
+      responses:
+        "200":
+          description: Assessment catalog
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AssessmentSummary"
+  /assessments/{assessmentId}:
+    get:
+      operationId: getAssessment
+      tags: [assessments]
+      summary: Get an assessment and its questions
+      parameters:
+        - name: assessmentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Assessment with its questions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Assessment"
+        "404":
+          description: Assessment not found
+  /discoveries:
+    get:
+      operationId: listDiscoveries
+      tags: [discoveries]
+      summary: List this browser's saved reports
+      security:
+        - anonymousOwner: []
+      responses:
+        "200":
+          description: Saved report summaries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DiscoveryListItem"
+        "401":
+          description: Owner token is missing or invalid
+  /discoveries/summary:
+    get:
+      operationId: getDiscoverySummary
+      tags: [discoveries]
+      summary: Get this browser's report summary
+      security:
+        - anonymousOwner: []
+      responses:
+        "200":
+          description: Counts and recent reports for this browser
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiscoverySummary"
+        "401":
+          description: Owner token is missing or invalid
+  /discoveries/analyze:
+    post:
+      operationId: analyzeDiscovery
+      tags: [discoveries]
+      summary: Analyze completed answers and save the report
+      security:
+        - anonymousOwner: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalyzeInput"
+      responses:
+        "201":
+          description: Personalized report saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Discovery"
+        "400":
+          description: Invalid or incomplete answers
+        "401":
+          description: Owner token is missing or invalid
+        "502":
+          description: Grok could not complete the analysis
+  /discoveries/{id}:
+    get:
+      operationId: getDiscovery
+      tags: [discoveries]
+      summary: Get one of this browser's saved reports
+      security:
+        - anonymousOwner: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Saved personalized report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Discovery"
+        "401":
+          description: Owner token is missing or invalid
+        "404":
+          description: Report not found
+    delete:
+      operationId: deleteDiscovery
+      tags: [discoveries]
+      summary: Delete one of this browser's saved reports
+      security:
+        - anonymousOwner: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Report deleted
+        "401":
+          description: Owner token is missing or invalid
+        "404":
+          description: Report not found
 components:
+  securitySchemes:
+    anonymousOwner:
+      type: http
+      scheme: bearer
+      bearerFormat: 64-character random browser token
   schemas:
     HealthStatus:
       type: object
@@ -33,4 +181,234 @@ components:
           type: string
       required:
         - status
+    AssessmentOption:
+      type: object
+      properties:
+        value:
+          type: string
+        labelAr:
+          type: string
+        labelEn:
+          type: string
+      required: [value, labelAr, labelEn]
+    AssessmentQuestion:
+      type: object
+      properties:
+        id:
+          type: string
+        promptAr:
+          type: string
+        promptEn:
+          type: string
+        type:
+          type: string
+          enum: [scale, choice]
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/AssessmentOption"
+      required: [id, promptAr, promptEn, type, options]
+    AssessmentSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        group:
+          type: string
+          enum: [self, future, abilities]
+        titleAr:
+          type: string
+        titleEn:
+          type: string
+        descriptionAr:
+          type: string
+        descriptionEn:
+          type: string
+        questionCount:
+          type: integer
+        estimatedMinutes:
+          type: integer
+      required:
+        - id
+        - group
+        - titleAr
+        - titleEn
+        - descriptionAr
+        - descriptionEn
+        - questionCount
+        - estimatedMinutes
+    Assessment:
+      allOf:
+        - $ref: "#/components/schemas/AssessmentSummary"
+        - type: object
+          properties:
+            questions:
+              type: array
+              items:
+                $ref: "#/components/schemas/AssessmentQuestion"
+          required: [questions]
+    AnalyzeAnswer:
+      type: object
+      properties:
+        questionId:
+          type: string
+        value:
+          type: string
+      required: [questionId, value]
+    AnalyzeInput:
+      type: object
+      properties:
+        assessmentId:
+          type: string
+        language:
+          type: string
+          enum: [ar, en]
+        answers:
+          type: array
+          minItems: 15
+          maxItems: 20
+          items:
+            $ref: "#/components/schemas/AnalyzeAnswer"
+      required: [assessmentId, language, answers]
+    AnsweredQuestion:
+      type: object
+      properties:
+        questionId:
+          type: string
+        promptAr:
+          type: string
+        promptEn:
+          type: string
+        answerValue:
+          type: string
+        answerLabelAr:
+          type: string
+        answerLabelEn:
+          type: string
+      required:
+        - questionId
+        - promptAr
+        - promptEn
+        - answerValue
+        - answerLabelAr
+        - answerLabelEn
+    CareerRecommendation:
+      type: object
+      properties:
+        title:
+          type: string
+        whyItMayFit:
+          type: string
+        practicalNextSteps:
+          type: array
+          items:
+            type: string
+      required: [title, whyItMayFit, practicalNextSteps]
+    DiscoveryReport:
+      type: object
+      properties:
+        summary:
+          type: string
+        observedPatterns:
+          type: array
+          items:
+            type: string
+        strengths:
+          type: array
+          items:
+            type: string
+        motivations:
+          type: array
+          items:
+            type: string
+        values:
+          type: array
+          items:
+            type: string
+        possibleTensions:
+          type: array
+          items:
+            type: string
+        recommendations:
+          type: array
+          minItems: 3
+          items:
+            $ref: "#/components/schemas/CareerRecommendation"
+        nextSteps:
+          type: array
+          items:
+            type: string
+        uncertaintyNote:
+          type: string
+      required:
+        - summary
+        - observedPatterns
+        - strengths
+        - motivations
+        - values
+        - possibleTensions
+        - recommendations
+        - nextSteps
+        - uncertaintyNote
+    DiscoveryListItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        assessmentId:
+          type: string
+        assessmentTitleAr:
+          type: string
+        assessmentTitleEn:
+          type: string
+        group:
+          type: string
+          enum: [self, future, abilities]
+        language:
+          type: string
+          enum: [ar, en]
+        summary:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - assessmentId
+        - assessmentTitleAr
+        - assessmentTitleEn
+        - group
+        - language
+        - summary
+        - createdAt
+    Discovery:
+      allOf:
+        - $ref: "#/components/schemas/DiscoveryListItem"
+        - type: object
+          properties:
+            answers:
+              type: array
+              items:
+                $ref: "#/components/schemas/AnsweredQuestion"
+            report:
+              $ref: "#/components/schemas/DiscoveryReport"
+          required: [answers, report]
+    DiscoverySummary:
+      type: object
+      properties:
+        totalResults:
+          type: integer
+        completedAssessmentCount:
+          type: integer
+        latestCreatedAt:
+          type: [string, "null"]
+        recentResults:
+          type: array
+          items:
+            $ref: "#/components/schemas/DiscoveryListItem"
+      required:
+        - totalResults
+        - completedAssessmentCount
+        - latestCreatedAt
+        - recentResults
 

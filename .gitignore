@@ -53,3 +53,6 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# User-created private report files (ephemeral local storage)
+**/data/masari/

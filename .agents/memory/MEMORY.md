@@ -1,0 +1,1 @@
+- [Masari report guardrails](masari-report-guardrails.md) — reports are exploratory, not diagnostic; avoid invented scores or guarantees and include practical trades where relevant.

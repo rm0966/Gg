@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "مساري | اكتشف نفسك"
+description = "An Arabic-first self-discovery and career guidance app with structured tests, practical profession recommendations, personalized Grok reports, anonymous saved results, and free PDF downloads."
+version = "1.0.0"
+id = "artifacts/masari-discovery"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19114
+
+[services.development]
+run = "pnpm --filter @workspace/masari-discovery run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/masari-discovery", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/masari-discovery/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19114"
+BASE_PATH = "/"
