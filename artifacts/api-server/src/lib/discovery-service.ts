@@ -4,7 +4,7 @@ import {
   AnalyzeDiscoveryResponse,
 } from "@workspace/api-zod";
 import { assessmentCatalog, type Assessment } from "../data/assessment-catalog";
-import { analyzeWithGrok, GrokAnalysisError } from "./grok-analysis";
+import { analyzeWithGroq, GroqAnalysisError } from "./groq-analysis";
 import { saveDiscovery, type DiscoveryRecord } from "./discovery-storage";
 
 type AnalyzeInput = ReturnType<typeof AnalyzeDiscoveryBody.parse>;
@@ -111,7 +111,7 @@ export async function analyzeAndSaveDiscovery(
     };
   });
 
-  const report = await analyzeWithGrok({
+  const report = await analyzeWithGroq({
     language: input.language,
     assessmentTitle:
       input.language === "ar" ? assessment.titleAr : assessment.titleEn,
@@ -137,7 +137,7 @@ export async function analyzeAndSaveDiscovery(
       report,
     });
   } catch {
-    throw new GrokAnalysisError("Grok returned a report in an unexpected format");
+    throw new GroqAnalysisError("Groq returned a report in an unexpected format");
   }
 
   const saved = await saveDiscovery(ownerToken, {

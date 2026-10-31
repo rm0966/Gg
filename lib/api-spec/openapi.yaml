@@ -121,7 +121,7 @@ paths:
         "401":
           description: Owner token is missing or invalid
         "502":
-          description: Grok could not complete the analysis
+          description: The AI service could not complete the analysis
   /discoveries/{id}:
     get:
       operationId: getDiscovery

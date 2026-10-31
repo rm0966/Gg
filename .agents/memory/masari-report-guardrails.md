@@ -7,4 +7,4 @@ Reports are for self-discovery, not medical or psychological diagnosis. Do not i
 
 **Why:** These are explicit requirements from the product brief.
 
-**How to apply:** Preserve these constraints in Grok prompts, report presentation, privacy behavior, and future storage changes.
+**How to apply:** Preserve these constraints in AI prompts, report presentation, privacy behavior, and future storage changes.

@@ -1,17 +1,8 @@
-import { ReplitConnectors } from "@replit/connectors-sdk";
-
-export class GrokAnalysisError extends Error {
-  constructor(message = "Grok could not complete the analysis") {
+export class GroqAnalysisError extends Error {
+  constructor(message = "Groq could not complete the analysis") {
     super(message);
-    this.name = "GrokAnalysisError";
+    this.name = "GroqAnalysisError";
   }
-}
-
-let connectors: ReplitConnectors | undefined;
-
-function getConnectors(): ReplitConnectors {
-  connectors ??= new ReplitConnectors();
-  return connectors;
 }
 
 function extractJsonObject(text: string): unknown {
@@ -19,17 +10,17 @@ function extractJsonObject(text: string): unknown {
   const start = trimmed.indexOf("{");
   const end = trimmed.lastIndexOf("}");
   if (start < 0 || end < start) {
-    throw new GrokAnalysisError("Grok returned an unreadable report");
+    throw new GroqAnalysisError("Groq returned an unreadable report");
   }
 
   try {
     return JSON.parse(trimmed.slice(start, end + 1)) as unknown;
   } catch {
-    throw new GrokAnalysisError("Grok returned an unreadable report");
+    throw new GroqAnalysisError("Groq returned an unreadable report");
   }
 }
 
-export async function analyzeWithGrok(input: {
+export async function analyzeWithGroq(input: {
   language: "ar" | "en";
   assessmentTitle: string;
   assessmentGroup: "self" | "future" | "abilities";
@@ -39,6 +30,11 @@ export async function analyzeWithGrok(input: {
     value: string;
   }>;
 }): Promise<unknown> {
+  const apiKey = process.env.GROQ_API_KEY?.trim();
+  if (!apiKey) {
+    throw new GroqAnalysisError("GROQ_API_KEY is not configured");
+  }
+
   const languageInstruction =
     input.language === "ar"
       ? "Write every report field in clear, natural Arabic."
@@ -63,11 +59,14 @@ export async function analyzeWithGrok(input: {
 
   let response: Response;
   try {
-    response = await getConnectors().proxy("xai", "/v1/chat/completions", {
+    response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: {
+        authorization: `Bearer ${apiKey}`,
+        "content-type": "application/json",
+      },
       body: JSON.stringify({
-        model: process.env.XAI_MODEL || "grok-4.5",
+        model: process.env.GROQ_MODEL || "openai/gpt-oss-120b",
         messages: [
           { role: "system", content: system },
           { role: "user", content: user },
@@ -76,13 +75,16 @@ export async function analyzeWithGrok(input: {
         temperature: 0.35,
         max_completion_tokens: 2600,
       }),
+      signal: AbortSignal.timeout(60_000),
     });
   } catch {
-    throw new GrokAnalysisError();
+    throw new GroqAnalysisError();
   }
 
   if (!response.ok) {
-    throw new GrokAnalysisError();
+    throw new GroqAnalysisError(
+      `Groq request failed with status ${response.status}`,
+    );
   }
 
   let payload: {
@@ -91,12 +93,12 @@ export async function analyzeWithGrok(input: {
   try {
     payload = (await response.json()) as typeof payload;
   } catch {
-    throw new GrokAnalysisError("Grok returned an invalid response");
+    throw new GroqAnalysisError("Groq returned an invalid response");
   }
 
   const content = payload.choices?.[0]?.message?.content;
   if (typeof content !== "string" || content.trim() === "") {
-    throw new GrokAnalysisError("Grok returned an empty report");
+    throw new GroqAnalysisError("Groq returned an empty report");
   }
 
   return extractJsonObject(content);

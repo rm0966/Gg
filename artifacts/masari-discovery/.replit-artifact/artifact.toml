@@ -1,7 +1,7 @@
 kind = "web"
 previewPath = "/"
 title = "مساري | اكتشف نفسك"
-description = "An Arabic-first self-discovery and career guidance app with structured tests, practical profession recommendations, personalized Grok reports, anonymous saved results, and free PDF downloads."
+description = "An Arabic-first self-discovery and career guidance app with structured tests, practical profession recommendations, personalized AI reports powered by Groq, anonymous saved results, and free PDF downloads."
 version = "1.0.0"
 id = "artifacts/masari-discovery"
 router = "path"

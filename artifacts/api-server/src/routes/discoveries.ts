@@ -23,7 +23,7 @@ import {
   analyzeAndSaveDiscovery,
   InvalidDiscoveryInputError,
 } from "../lib/discovery-service";
-import { GrokAnalysisError } from "../lib/grok-analysis";
+import { GroqAnalysisError } from "../lib/groq-analysis";
 
 const router: IRouter = Router();
 
@@ -107,8 +107,8 @@ router.post("/discoveries/analyze", async (req, res): Promise<void> => {
       return;
     }
 
-    if (error instanceof GrokAnalysisError) {
-      req.log.error({ err: error }, "Grok report generation failed");
+    if (error instanceof GroqAnalysisError) {
+      req.log.error({ err: error }, "AI report generation failed");
       const message =
         parsed.data.language === "ar"
           ? "تعذر إعداد التقرير الآن. إجاباتك ما زالت محفوظة كمسودة في هذا المتصفح؛ حاول مرة أخرى."

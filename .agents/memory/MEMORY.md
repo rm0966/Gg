@@ -1,1 +1,2 @@
 - [Masari report guardrails](masari-report-guardrails.md) — reports are exploratory, not diagnostic; avoid invented scores or guarantees and include practical trades where relevant.
+- [API codegen runtime](api-codegen-runtime.md) — run this workspace's OpenAPI code generation with Node.js 24; Node.js 20 fails in the Zod generator after clearing generated outputs.

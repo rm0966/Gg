@@ -1,45 +1,39 @@
-# [Project name]
+# مساري | Masari Discovery
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+An Arabic-first self-discovery and career exploration app with bilingual assessments, anonymous saved reports, practical recommendations, and free PDF downloads.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- On Replit, start `artifacts/masari-discovery: web` and `artifacts/api-server: API Server`. These managed workflows provide the service ports and proxy paths.
+- `pnpm install` — install workspace dependencies.
+- `pnpm run typecheck` — typecheck shared libraries and workspace apps.
+- `pnpm run build` — typecheck and build workspace packages.
+- Required secret for report generation: `GROQ_API_KEY`.
+- Optional environment variable: `GROQ_MODEL` (defaults to `openai/gpt-oss-120b`).
+- The API stores anonymous reports as local JSON under `artifacts/api-server/data/masari`; these files may not survive some restarts or redeployments.
 
 ## Stack
 
-- pnpm workspaces, Node.js 24, TypeScript 5.9
+- pnpm workspaces, Node.js 24, TypeScript
+- Web: React + Vite
 - API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- AI reports: Groq chat completions API
+- API contracts: OpenAPI, Orval, Zod
+- Current report storage: owner-scoped local JSON files
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/masari-discovery` — Arabic-first React/Vite app.
+- `artifacts/api-server` — Express API, assessment catalog, Groq report generation, and local report storage.
+- `lib/api-spec/openapi.yaml` — API contract source of truth.
+- `lib/api-zod` and `lib/api-client-react` — generated validation schemas and React API hooks.
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
-
-## Product
-
-_Describe the high-level user-facing capabilities of this app once they exist._
-
-## User preferences
-
-_Populate as you build — explicit user instructions worth remembering across sessions._
-
-## Gotchas
-
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Reports are for self-discovery, not medical or psychological diagnosis.
+- The first version does not require an account or phone number.
+- Saved reports are scoped to a private browser token; local JSON storage may not survive every restart or redeployment.
 
 ## Pointers
 
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- See `.local/skills/pnpm-workspace/SKILL.md` for workspace structure and package conventions.
